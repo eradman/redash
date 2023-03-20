@@ -76,13 +76,17 @@ function prepareSeries(series: any, options: any, additionalOptions: any) {
     hole: 0.4,
     marker: {
       colors: markerColors,
+      line: {
+        color: "#fff",
+	width: 1.5,
+      }
     },
     hoverinfo: hoverInfoPattern,
     text: [],
     textinfo: options.showDataLabels ? "percent" : "none",
     textposition: "inside",
     textfont: {
-      color: textColors,
+      color: "#fff",
     },
     name: seriesOptions.name || series.name,
     direction: options.direction.type,
