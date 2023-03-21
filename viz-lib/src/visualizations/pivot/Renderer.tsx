@@ -57,7 +57,29 @@ export default function Renderer({ data, options, onOptionsChange }: any) {
       data-hide-row-totals={hideRowTotals || null}
       data-hide-column-totals={hideColumnTotals || null}
       data-test="PivotTableVisualization">
-      <PivotTableUI {...pick(config, VALID_OPTIONS)} data={dataRows} onChange={onChange} />
+      <PivotTableUI {...pick(config, VALID_OPTIONS)} data={dataRows} onChange={onChange}
+        tableColorScaleGenerator={(values: any) => {
+               const min = Math.min.apply(Math, values);
+               const max = Math.max.apply(Math, values);
+               const range = max - min;
+               return (x: any) => {
+                 const progress = ((max - x) / range) - 0.05;
+                 // https://colorbrewer2.org/#type=sequential&scheme=YlGnBu&n=9
+                 const blues = [
+                   "#ffffff",
+                   "#ffffd9",
+                   "#edf8b1",
+                   "#c7e9b4",
+                   "#7fcdbb",
+                   "#41b6c4",
+                   "#1d91c0",
+                 ];
+                 const len = blues.length - 1;
+                 const backgroundColor = blues[len - Math.round(progress * len)];
+                 return { backgroundColor };
+               };
+             }}
+       />
     </div>
   );
 }
