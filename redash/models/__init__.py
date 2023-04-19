@@ -982,6 +982,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
     subscriptions = db.relationship("AlertSubscription", cascade="all, delete-orphan")
     last_triggered_at = Column(db.DateTime(True), nullable=True)
     rearm = Column(db.Integer, nullable=True)
+    last_value = None
 
     __tablename__ = "alerts"
 
@@ -1004,13 +1005,21 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         data = self.query_rel.latest_query_data.data
 
         if data["rows"] and self.options["column"] in data["rows"][0]:
-            op = OPERATORS.get(self.options["op"], lambda v, t: False)
+            self.result_value = data["rows"][0][self.options["column"]]
 
-            value = data["rows"][0][self.options["column"]]
-            threshold = self.options["value"]
+            for row in data["rows"]:
+                op = OPERATORS.get(self.options["op"], lambda v, t: False)
 
-            new_state = next_state(op, value, threshold)
+                value = row[self.options["column"]]
+                threshold = self.options["value"]
+
+                new_state = next_state(op, value, threshold)
+
+                if new_state == Alert.TRIGGERED_STATE:
+                    self.result_value = value
+                    break  # no need for further evaluation
         else:
+            self.result_value = None
             new_state = self.UNKNOWN_STATE
 
         return new_state
@@ -1027,12 +1036,6 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
         data = self.query_rel.latest_query_data.data
         host = base_url(self.query_rel.org)
 
-        col_name = self.options["column"]
-        if data["rows"] and col_name in data["rows"][0]:
-            result_value = data["rows"][0][col_name]
-        else:
-            result_value = None
-
         context = {
             "ALERT_NAME": self.name,
             "ALERT_URL": "{host}/alerts/{alert_id}".format(host=host, alert_id=self.id),
@@ -1043,7 +1046,7 @@ class Alert(TimestampMixin, BelongsToOrgMixin, db.Model):
             "QUERY_URL": "{host}/queries/{query_id}".format(
                 host=host, query_id=self.query_rel.id
             ),
-            "QUERY_RESULT_VALUE": result_value,
+            "QUERY_RESULT_VALUE": self.result_value,
             "QUERY_RESULT_ROWS": data["rows"],
             "QUERY_RESULT_COLS": data["columns"],
         }
