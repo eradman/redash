@@ -603,7 +603,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     def outdated_queries(cls):
         queries = (
             Query.query.options(joinedload(Query.latest_query_data).load_only("retrieved_at"))
-            .filter(Query.schedule.isnot(None))
+            .filter(Query.schedule.isnot(None), Query.is_archived.is_(False))
             .order_by(Query.id)
             .all()
         )
