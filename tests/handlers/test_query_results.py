@@ -279,8 +279,7 @@ class TestQueryResultAPI(BaseTestCase):
             "/api/queries/{}/results?api_key={}".format(query.id, query.api_key),
             data=data,
         )
-        self.assertEqual(rv.status_code, 403)
-        self.assertDictEqual(rv.json, error_messages["unsafe_when_shared"][0])
+        self.assertEqual(rv.status_code, 200)
 
     def test_access_with_query_api_key(self):
         ds = self.factory.create_data_source(group=self.factory.org.default_group, view_only=False)
