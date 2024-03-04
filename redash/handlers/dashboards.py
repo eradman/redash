@@ -173,7 +173,7 @@ class DashboardResource(BaseResource):
         :>json string widget.updated_at: ISO format timestamp for last widget modification
         """
         if request.args.get("legacy") is not None:
-            fn = models.Dashboard.get_by_slug_and_org
+            fn = models.Dashboard.get_latest_by_slug_and_org
         else:
             fn = models.Dashboard.get_by_id_and_org
 
