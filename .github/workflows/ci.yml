@@ -60,6 +60,7 @@ jobs:
       - name: Build Docker Images
         run: |
           set -x
+          make env
           docker compose build
           docker compose up -d
           sleep 10
