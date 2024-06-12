@@ -54,7 +54,17 @@ export default class QueryBasedParameterInput extends React.Component {
       return validValues;
     }
     const found = find(options, option => option.value === this.props.value) !== undefined;
+
+    //addresses STAR-10346 by adding in a null option to pick
+    options.unshift({ name: "", value: "" });
+
     value = found ? value : get(first(options), "value");
+
+    //addresses STAR-10346 by adding in a null option to pick
+    if (options[0].name === "") {
+      options.shift();
+    }
+
     this.setState({ value });
     return value;
   }
