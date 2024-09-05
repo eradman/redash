@@ -28,6 +28,17 @@ export const AdditionalColors = {
   "Pink 2": "#C63FA9",
 };
 
+const Starfish = {
+  1: '#44ac80', // green-500
+  2: '#77cdff', // marine-500
+  3: '#6781b2', // dark-blue-500
+  4: '#ae6f91', // purple-500
+  5: '#ffaa36', // orange-500
+  6: '#cc5757', // red-500
+  7: '#aac06a', // lime-500
+  8: '#90a0b6', // slate-500
+};
+
 const Viridis = {
   1: '#440154',
   2: '#48186a',
@@ -84,22 +95,25 @@ export const ColorPaletteArray = values(ColorPalette);
 export default ColorPalette;
 
 export const AllColorPalettes = {
-  "Redash" : ColorPalette,
-  "Viridis" : Viridis,
-  "Tableau 10" : Tableau,
   "D3 Category 10" : D3Category10,
+  "Redash" : ColorPalette,
+  "Starfish" : Starfish,
+  "Tableau 10" : Tableau,
+  "Viridis" : Viridis,
 }
 
 export const AllColorPaletteArrays = {
-  "Redash" : ColorPaletteArray,
-  "Viridis" : values(Viridis),
-  "Tableau 10" : values(Tableau),
   "D3 Category 10" : values(D3Category10),
+  "Redash" : ColorPaletteArray,
+  "Starfish" : values(Starfish),
+  "Tableau 10" : values(Tableau),
+  "Viridis" : values(Viridis),
 };
 
 export const ColorPaletteTypes = {
-  "Redash" : 'discrete',
-  "Viridis" : 'continuous',
-  "Tableau 10" : 'discrete',
   "D3 Category 10" : 'discrete',
+  "Redash" : 'discrete',
+  "Starfish" : 'discrete',
+  "Tableau 10" : 'discrete',
+  "Viridis" : 'continuous',
 }
