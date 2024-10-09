@@ -27,8 +27,12 @@ function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParameters
   const canEditParameters = canEditDashboard && !isEmpty(invoke(widget, "query.getParametersDefs"));
   const widgetQueryResult = widget.getQueryResult();
   const isQueryResultEmpty = !widgetQueryResult || !widgetQueryResult.isEmpty || widgetQueryResult.isEmpty();
-
-  const downloadLink = fileType => widgetQueryResult.getLink(widget.getQuery().id, fileType);
+  const parts = window.location.pathname.split('/').reverse()
+  var apiKey = null;
+  if (parts.length > 3 && parts[2] === 'public' && parts[0].length === 40) {
+    apiKey = parts[0];
+  }
+  const downloadLink = fileType => widgetQueryResult.getLink(widget.getQuery().id, fileType, apiKey);
   const downloadName = fileType => widgetQueryResult.getName(widget.getQuery().name, fileType);
   return compact([
     <Menu.Item key="download_csv" disabled={isQueryResultEmpty}>
