@@ -28,9 +28,6 @@ clean:
 	docker image rm --force \
 		cypress-server:latest cypress-worker:latest cypress-scheduler:latest \
 		redash-server:latest redash-worker:latest redash-scheduler:latest
-	docker container prune --force
-	docker image prune --force
-	docker volume prune --force
 
 clean-all: clean
 	docker image rm --force \
