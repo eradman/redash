@@ -6,7 +6,7 @@ Create Date: 2024-10-18 11:24:49
 
 """
 
-from redash.models import db
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '1655999df5e3'
@@ -16,12 +16,11 @@ depends_on = None
 
 
 def upgrade():
-    db.session.execute("""
+    op.execute("""
     UPDATE alerts
     SET options = jsonb_set(options, '{selector}', '"first"')
     WHERE options->>'selector' IS NULL;
     """)
-    db.session.commit()
 
 def downgrade():
     pass
