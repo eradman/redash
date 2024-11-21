@@ -51,7 +51,8 @@ function WidgetDeleteButton({ onClick }) {
         title="Remove From Dashboard"
         onClick={onClick}
         data-test="WidgetDeleteButton"
-        aria-label="Close">
+        aria-label="Close"
+      >
         <i className="zmdi zmdi-close" aria-hidden="true" />
       </PlainButton>
     </div>
@@ -108,7 +109,7 @@ class Widget extends React.Component {
 
   render() {
     const { className, children, header, footer, canEdit, menuOptions, tileProps } = this.props;
-    const showDropdownButton = (canEdit || !isEmpty(menuOptions));
+    const showDropdownButton = canEdit || !isEmpty(menuOptions);
     return (
       <div className="widget-wrapper">
         <div className={cx("tile body-container", className)} {...tileProps}>
