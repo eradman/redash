@@ -384,6 +384,7 @@ const QueryService = {
   save: data => axios.post(saveOrCreateUrl(data), data).then(getQuery),
   delete: data => axios.delete(`api/queries/${data.id}`),
   recent: params => axios.get(`api/queries/recent`, { params }).then(data => map(data, getQuery)),
+  unassigned: params => axios.get(`api/queries/unassigned`, { params }).then(mapResults),
   archive: params => axios.get(`api/queries/archive`, { params }).then(mapResults),
   myQueries: params => axios.get("api/queries/my", { params }).then(mapResults),
   fork: ({ id }) => axios.post(`api/queries/${id}/fork`, { id }).then(getQuery),
