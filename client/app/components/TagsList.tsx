@@ -1,4 +1,4 @@
-import { map, includes, difference, sortBy } from "lodash";
+import { map, includes, difference } from "lodash";
 import React, { useState, useCallback, useEffect } from "react";
 import Badge from "antd/lib/badge";
 import Menu from "antd/lib/menu";
@@ -75,8 +75,6 @@ function TagsList({ tagsUrl, showUnselectAll = false, onUpdate }: TagsListProps)
     return null;
   }
 
-  const sortedTags = sortBy(allTags, "name");
-
   return (
     <div className="tags-list">
       <div className="tags-list-title">
@@ -91,7 +89,7 @@ function TagsList({ tagsUrl, showUnselectAll = false, onUpdate }: TagsListProps)
 
       <div className="tiled">
         <Menu className="invert-stripe-position" mode="inline" selectedKeys={selectedTags}>
-          {map(sortedTags, tag => (
+          {map(allTags, tag => (
             <Menu.Item key={tag.name} className="m-0">
               <PlainButton
                 className="d-flex align-items-center justify-content-between"
