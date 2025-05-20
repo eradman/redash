@@ -101,6 +101,21 @@ const Redash20 = {
   24 : "#A82C1D"
 }
 
+const Starfish = {
+  1 : "#F18784",
+  2 : "#FBBC71",
+  3 : "#F7AA46",
+  4 : "#AFC570",
+  5 : "#4FC8A1",
+  6 : "#6CD0FB",
+  7 : "#8DA6D0",
+  8 : "#5C76A6",
+  9 : "#C27C9F",
+  10 : "#F6A2CA",
+  11 : "#D6A8BB",
+  12 : "#CB5051"
+}
+
 let ColorPalette = {
   ...BaseColors,
   ...AdditionalColors,
@@ -116,6 +131,7 @@ export const AllColorPalettes = {
   "Tableau 10" : Tableau,
   "D3 Category 10" : D3Category10,
   "Redash 2.0" : Redash20,
+  "Starfish" : Starfish,
 }
 
 export const AllColorPaletteArrays = {
@@ -124,6 +140,7 @@ export const AllColorPaletteArrays = {
   "Tableau 10" : values(Tableau),
   "D3 Category 10" : values(D3Category10),
   "Redash 2.0" : values(Redash20),
+  "Starfish" : values(Starfish),
 };
 
 export const ColorPaletteTypes = {
@@ -132,4 +149,5 @@ export const ColorPaletteTypes = {
   "Tableau 10" : 'discrete',
   "D3 Category 10" : 'discrete',
   "Redash 2.0" : 'continuous',
+  "Starfish" : 'discrete',
 }
