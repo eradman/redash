@@ -4,6 +4,7 @@ import { compact, isEmpty, invoke, map } from "lodash";
 import { markdown } from "markdown";
 import cx from "classnames";
 import Menu from "antd/lib/menu";
+import Switch from "antd/lib/switch";
 import HtmlContent from "@redash/viz/lib/components/HtmlContent";
 import { currentUser } from "@/services/auth";
 import recordEvent from "@/services/recordEvent";
@@ -22,7 +23,17 @@ import VisualizationRenderer from "@/components/visualizations/VisualizationRend
 
 import Widget from "./Widget";
 
-function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParametersEdit }) {
+function visualizationWidgetMenuOptions({
+  widget,
+  canEditDashboard,
+  onParametersEdit,
+  onToggleShowQueryDescription,
+  onToggleShowQueryName,
+  onToggleShowVisualizationName,
+  showQueryDescription,
+  showQueryName,
+  showVisualizationName,
+}) {
   const canViewQuery = currentUser.hasPermission("view_query");
   const canEditParameters = canEditDashboard && !isEmpty(invoke(widget, "query.getParametersDefs"));
   const widgetQueryResult = widget.getQueryResult();
@@ -62,6 +73,21 @@ function visualizationWidgetMenuOptions({ widget, canEditDashboard, onParameters
         "Download as Excel File"
       )}
     </Menu.Item>,
+    <Menu.Divider key="divider_before_display_options" />,
+    <Menu.SubMenu key="display_options" title="Display Options" data-test="DisplayOptionsSubMenu">
+      <Menu.Item key="show_query_description" disabled={true}>
+        <Switch size="small" checked={showQueryDescription} onClick={onToggleShowQueryDescription} /> Show Query
+        Description
+      </Menu.Item>
+      <Menu.Item key="show_query_name" disabled={true}>
+        <Switch size="small" checked={showQueryName} onClick={onToggleShowQueryName} /> Show Query Name
+      </Menu.Item>
+      <Menu.Item key="show_viz_name" disabled={true}>
+        <Switch size="small" checked={showVisualizationName} onClick={onToggleShowVisualizationName} /> Show
+        Visualization Name
+      </Menu.Item>
+    </Menu.SubMenu>,
+
     (canViewQuery || canEditParameters) && <Menu.Divider key="divider" />,
     canViewQuery && (
       <Menu.Item key="view_query">
@@ -98,6 +124,9 @@ function VisualizationWidgetHeader({
   isEditing,
   onParametersUpdate,
   onParametersEdit,
+  showVisualizationName,
+  showQueryName,
+  showQueryDescription,
 }) {
   const canViewQuery = currentUser.hasPermission("view_query");
 
@@ -106,10 +135,19 @@ function VisualizationWidgetHeader({
       <RefreshIndicator refreshStartedAt={refreshStartedAt} />
       <div className="t-header widget clearfix">
         <div className="th-title">
-          <p>
-            <QueryLink query={widget.getQuery()} visualization={widget.visualization} readOnly={!canViewQuery} />
-          </p>
-          {!isEmpty(widget.getQuery().description) && (
+          {(showQueryName | showVisualizationName && (
+            <p>
+              <QueryLink
+                query={widget.getQuery()}
+                visualization={widget.visualization}
+                readOnly={!canViewQuery}
+                showQueryName={showQueryName}
+                showVisualizationName={showVisualizationName}
+              />
+            </p>
+          )) ||
+            ""}
+          {showQueryDescription && (
             <HtmlContent className="text-muted markdown query--description">
               {markdown.toHTML(widget.getQuery().description || "")}
             </HtmlContent>
@@ -138,6 +176,9 @@ VisualizationWidgetHeader.propTypes = {
   isEditing: PropTypes.bool,
   onParametersUpdate: PropTypes.func,
   onParametersEdit: PropTypes.func,
+  showQueryDescription: PropTypes.bool,
+  showQueryName: PropTypes.bool,
+  showVisualizationName: PropTypes.bool,
 };
 
 VisualizationWidgetHeader.defaultProps = {
@@ -146,6 +187,9 @@ VisualizationWidgetHeader.defaultProps = {
   onParametersEdit: () => {},
   isEditing: false,
   parameters: [],
+  showQueryDescription: true,
+  showQueryName: true,
+  showVisualizationName: true,
 };
 
 function VisualizationWidgetFooter({ widget, isPublic, onRefresh, onExpand }) {
@@ -227,6 +271,7 @@ class VisualizationWidget extends React.Component {
     onRefresh: PropTypes.func,
     onDelete: PropTypes.func,
     onParameterMappingsChange: PropTypes.func,
+    onOptionsChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -239,6 +284,7 @@ class VisualizationWidget extends React.Component {
     onRefresh: () => {},
     onDelete: () => {},
     onParameterMappingsChange: () => {},
+    onOptionsChange: () => {},
   };
 
   constructor(props) {
@@ -246,6 +292,9 @@ class VisualizationWidget extends React.Component {
     this.state = {
       localParameters: props.widget.getLocalParameters(),
       localFilters: props.filters,
+      showVisualizationName: props.widget.options?.showVisualizationName ?? true,
+      showQueryName: props.widget.options?.showQueryName ?? true,
+      showQueryDescription: props.widget.options?.showQueryDescription ?? true,
     };
   }
 
@@ -279,10 +328,51 @@ class VisualizationWidget extends React.Component {
     });
   };
 
+  toggleShowQueryDescription = () => {
+    const { widget } = this.props;
+    const { showQueryDescription } = this.state;
+    const newOptions = {
+      ...widget.options,
+      showQueryDescription: !showQueryDescription,
+    };
+
+    widget.save("options", newOptions).then(() => {
+      this.setState({ showQueryDescription: !showQueryDescription });
+    });
+  };
+
+  toggleShowQueryName = () => {
+    const { widget } = this.props;
+    const { showQueryName } = this.state;
+    const newOptions = {
+      ...widget.options,
+      showQueryName: !showQueryName,
+    };
+
+    widget.save("options", newOptions).then(() => {
+      this.setState({ showQueryName: !showQueryName });
+    });
+  };
+
+  toggleShowVisualizationName = () => {
+    const { widget } = this.props;
+    const { showVisualizationName } = this.state;
+
+    const newOptions = {
+      ...widget.options,
+      showVisualizationName: !showVisualizationName,
+    };
+
+    widget.save("options", newOptions).then(() => {
+      this.setState({ showVisualizationName: !showVisualizationName });
+    });
+  };
+
   renderVisualization() {
     const { widget, filters } = this.props;
     const widgetQueryResult = widget.getQueryResult();
     const widgetStatus = widgetQueryResult && widgetQueryResult.getStatus();
+
     switch (widgetStatus) {
       case "failed":
         return (
@@ -325,7 +415,7 @@ class VisualizationWidget extends React.Component {
 
   render() {
     const { widget, isLoading, isPublic, canEdit, isEditing, onRefresh } = this.props;
-    const { localParameters } = this.state;
+    const { localParameters, showQueryDescription, showQueryName, showVisualizationName } = this.state;
     const widgetQueryResult = widget.getQueryResult();
     const isRefreshing = isLoading && !!(widgetQueryResult && widgetQueryResult.getStatus());
     const onParametersEdit = (parameters) => {
@@ -342,6 +432,12 @@ class VisualizationWidget extends React.Component {
           widget,
           canEditDashboard: canEdit,
           onParametersEdit: this.editParameterMappings,
+          onToggleShowVisualizationName: this.toggleShowVisualizationName,
+          onToggleShowQueryName: this.toggleShowQueryName,
+          onToggleShowQueryDescription: this.toggleShowQueryDescription,
+          showQueryDescription,
+          showQueryName,
+          showVisualizationName,
         })}
         header={
           <VisualizationWidgetHeader
@@ -351,6 +447,9 @@ class VisualizationWidget extends React.Component {
             isEditing={isEditing}
             onParametersUpdate={onRefresh}
             onParametersEdit={onParametersEdit}
+            showQueryDescription={showQueryDescription}
+            showQueryName={showQueryName}
+            showVisualizationName={showVisualizationName}
           />
         }
         footer={
