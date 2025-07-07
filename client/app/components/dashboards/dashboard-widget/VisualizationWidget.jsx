@@ -135,16 +135,18 @@ function VisualizationWidgetHeader({
       <RefreshIndicator refreshStartedAt={refreshStartedAt} />
       <div className="t-header widget clearfix">
         <div className="th-title">
-          {showQueryName && (
+          {(showQueryName | showVisualizationName && (
             <p>
               <QueryLink
                 query={widget.getQuery()}
                 visualization={widget.visualization}
                 readOnly={!canViewQuery}
-                compactTitle={showVisualizationName}
+                showQueryName={showQueryName}
+                showVisualizationName={showVisualizationName}
               />
             </p>
-          )}
+          )) ||
+            ""}
           {showQueryDescription && (
             <HtmlContent className="text-muted markdown query--description">
               {markdown.toHTML(widget.getQuery().description || "")}
@@ -345,22 +347,16 @@ class VisualizationWidget extends React.Component {
     const newOptions = {
       ...widget.options,
       showQueryName: !showQueryName,
-      showVisualizationName: !showQueryName,
     };
 
     widget.save("options", newOptions).then(() => {
       this.setState({ showQueryName: !showQueryName });
-      this.setState({ showVisualizationName: !showQueryName });
     });
   };
 
   toggleShowVisualizationName = () => {
     const { widget } = this.props;
-    const { showQueryName, showVisualizationName } = this.state;
-
-    if (!showQueryName) {
-      return;
-    }
+    const { showVisualizationName } = this.state;
 
     const newOptions = {
       ...widget.options,

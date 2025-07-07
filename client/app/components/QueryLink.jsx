@@ -6,7 +6,7 @@ import VisualizationName from "@/components/visualizations/VisualizationName";
 
 import "./QueryLink.less";
 
-function QueryLink({ query, visualization, readOnly, compactTitle }) {
+function QueryLink({ query, visualization, readOnly, showQueryName, showVisualizationName }) {
   const getUrl = () => {
     let hash = null;
     if (visualization) {
@@ -25,10 +25,10 @@ function QueryLink({ query, visualization, readOnly, compactTitle }) {
 
   return (
     <QueryLinkWrapper className="query-link">
-      {(compactTitle && <VisualizationName visualization={visualization} compactTitle={compactTitle} />) || (
+      {(showVisualizationName & showQueryName && <VisualizationName visualization={visualization} />) || (
         <span className="visualization-name" />
       )}
-      <span>{query.name}</span>
+      {(showQueryName && <span>{query.name}</span>) || <span>{visualization.name}</span>}
     </QueryLinkWrapper>
   );
 }
