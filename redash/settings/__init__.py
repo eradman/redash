@@ -461,6 +461,9 @@ REQUESTS_ALLOW_REDIRECTS = parse_boolean(os.environ.get("REDASH_REQUESTS_ALLOW_R
 # This is turned off by default to avoid breaking any existing deployments but it is highly recommended to turn this toggle on to prevent CSRF attacks.
 ENFORCE_CSRF = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF", "false"))
 
+# this enforces CSRF even for authorized users - turned off by default to maintain backward compatibility
+ENFORCE_CSRF_FOR_AUTH_USERS = parse_boolean(os.environ.get("REDASH_ENFORCE_CSRF_FOR_AUTH_USERS", "false"))
+
 # Databricks
 
 CSRF_TIME_LIMIT = int(os.environ.get("REDASH_CSRF_TIME_LIMIT", 3600 * 6))
