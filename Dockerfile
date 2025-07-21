@@ -41,10 +41,13 @@ FROM python:3.10-slim-bookworm
 
 EXPOSE 5000
 
+# Controls whether to build the backend app
+ARG skip_backend_build
+
 RUN useradd --create-home redash
 
 # Ubuntu packages
-RUN apt-get update && \
+RUN if [ "x$skip_backend_build" = "x" ] ; then apt-get update && \
   apt-get install -y --no-install-recommends \
   pkg-config \
   curl \
@@ -70,7 +73,8 @@ RUN apt-get update && \
   unzip \
   libsasl2-modules-gssapi-mit && \
   apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* \
+  ; fi
 
 
 ARG TARGETPLATFORM
@@ -98,10 +102,7 @@ WORKDIR /app
 ENV POETRY_VERSION=1.8.3
 ENV POETRY_HOME=/etc/poetry
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN curl -sSL https://install.python-poetry.org | python3 -
-
-# Avoid crashes, including corrupted cache artifacts, when building multi-platform images with GitHub Actions.
-RUN /etc/poetry/bin/poetry cache clear pypi --all
+RUN if [ "x$skip_backend_build" = "x" ]; then curl -sSL https://install.python-poetry.org | python3 -; fi
 
 COPY pyproject.toml poetry.lock ./
 
@@ -109,7 +110,7 @@ ARG POETRY_OPTIONS="--no-root --no-interaction --no-ansi"
 # for LDAP authentication, install with `ldap3` group
 # disabled by default due to GPL license conflict
 ARG install_groups="main,all_ds,dev"
-RUN /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS
+RUN if [ "x$skip_backend_build" = "x" ]; then /etc/poetry/bin/poetry install --only $install_groups $POETRY_OPTIONS; fi
 
 COPY --chown=redash . /app
 COPY --from=frontend-builder --chown=redash /frontend/client/dist /app/client/dist
