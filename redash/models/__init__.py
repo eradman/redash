@@ -1163,6 +1163,11 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def get_by_slug_and_org(cls, slug, org):
         return cls.query.filter(cls.slug == slug, cls.org == org).one()
 
+    @classmethod
+    def get_latest_by_slug_and_org(cls, slug, org):
+        pattern = "{}(_[0-9]+)?".format(slug)
+        return cls.query.filter(cls.slug.op("SIMILAR TO")(pattern), cls.org == org).order_by(cls.id.desc()).first()
+
     def fork(self, user):
         forked_list = ["org", "layout", "dashboard_filters_enabled", "tags"]
 
