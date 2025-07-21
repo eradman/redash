@@ -90,7 +90,7 @@
     "leaflet-fullscreen": "^1.0.2",
     "leaflet.markercluster": "^1.1.0",
     "lodash": "^4.17.10",
-    "numeral": "^2.0.6",
+    "numeral": "https://github.com/StarfishStorage/Numeral-js",
     "plotly.js": "2.35.3",
     "react-pivottable": "^0.9.0",
     "react-sortable-hoc": "^1.10.1",
@@ -113,7 +113,7 @@
     }
   },
   "browser": {
-      "fs": false,
-      "path": false
+    "fs": false,
+    "path": false
   }
 }
