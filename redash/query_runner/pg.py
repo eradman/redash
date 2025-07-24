@@ -204,45 +204,15 @@ class PostgreSQL(BaseSQLQueryRunner):
         build_schema(results, schema)
 
     def _get_tables(self, schema):
-        """
-        relkind constants per https://www.postgresql.org/docs/10/static/catalog-pg-class.html
-        r = regular table
-        v = view
-        m = materialized view
-        f = foreign table
-        p = partitioned table (new in 10)
-        ---
-        i = index
-        S = sequence
-        t = TOAST table
-        c = composite type
-        """
-
         query = """
-        SELECT s.nspname as table_schema,
-               c.relname as table_name,
-               a.attname as column_name,
-               null as data_type
-        FROM pg_class c
-        JOIN pg_namespace s
-        ON c.relnamespace = s.oid
-        AND s.nspname NOT IN ('pg_catalog', 'information_schema')
-        JOIN pg_attribute a
-        ON a.attrelid = c.oid
-        AND a.attnum > 0
-        AND NOT a.attisdropped
-        WHERE c.relkind IN ('m', 'f', 'p')
-        AND has_table_privilege(s.nspname || '.' || c.relname, 'select')
-        AND has_schema_privilege(s.nspname, 'usage')
-
-        UNION
-
         SELECT table_schema,
                table_name,
                column_name,
                data_type
         FROM information_schema.columns
         WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+        AND has_table_privilege(table_schema || '.' || table_name, 'select')
+        AND has_schema_privilege(table_schema, 'usage')
         """
 
         self._get_definitions(schema, query)
