@@ -9,6 +9,7 @@ from redash import __version__, create_app, rq_redis_connection, settings
 from redash.cli import (
     data_sources,
     database,
+    events,
     groups,
     organization,
     queries,
@@ -36,6 +37,7 @@ def manager():
 
 
 manager.add_command(database.manager, "database")
+manager.add_command(events.manager, "events")
 manager.add_command(users.manager, "users")
 manager.add_command(groups.manager, "groups")
 manager.add_command(data_sources.manager, "ds")
