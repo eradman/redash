@@ -175,7 +175,7 @@ class QueryResultListResource(BaseResource):
         else:
             return error_messages["select_data_source"]
 
-        if not has_access(data_source, self.current_user, not_view_only):
+        if not (current_user.is_api_user() or has_access(data_source, self.current_user, not_view_only)):
             return error_messages["no_permission"]
 
         return run_query(
@@ -266,7 +266,9 @@ class QueryResultResource(BaseResource):
         else:
             should_apply_auto_limit = query.options.get("apply_auto_limit", False)
 
-        if has_access(query, self.current_user, allow_executing_with_view_only_permissions):
+        if current_user.is_api_user() or has_access(
+            query, self.current_user, allow_executing_with_view_only_permissions
+        ):
             return run_query(
                 query.parameterized,
                 parameter_values,
