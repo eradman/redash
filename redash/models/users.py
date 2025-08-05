@@ -12,7 +12,7 @@ from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
 
-from redash import redis_connection
+from redash import redis_connection, settings
 from redash.utils import dt_from_timestamp, generate_token
 
 from .base import Column, GFKBase, db, key_type, primary_key
@@ -165,9 +165,8 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     def profile_image_url(self):
         if self._profile_image_url:
             return self._profile_image_url
-
-        email_md5 = hashlib.md5(self.email.lower().encode(), usedforsecurity=False).hexdigest()
-        return "https://www.gravatar.com/avatar/{}?s=40&d=identicon".format(email_md5)
+        else:
+            return settings.DEFAULT_PROFILE_IMAGE
 
     @property
     def permissions(self):
