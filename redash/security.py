@@ -45,8 +45,13 @@ def init_app(app):
                 return
             # END workaround
 
-            if not current_user.is_authenticated or "user_id" in session:
+            # if the flag is on - always check CSRF
+            if settings.ENFORCE_CSRF_FOR_AUTH_USERS:
                 csrf.protect()
+            else:
+                # otherwise - only if user is not authenticated
+                if not current_user.is_authenticated or "user_id" in session:
+                    csrf.protect()
 
     talisman.init_app(
         app,
