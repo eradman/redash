@@ -182,7 +182,7 @@ def jwt_token_load_user_from_request(request):
             public_certs_url=org_settings["auth_jwt_auth_public_certs_url"],
         )
         if not token_is_valid:
-            raise Unauthorized("Invalid JWT token")
+            redirect_to_login()
 
     if not payload:
         return
