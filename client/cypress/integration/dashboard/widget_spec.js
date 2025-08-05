@@ -44,6 +44,18 @@ describe("Widget", () => {
     });
   });
 
+  it("try display options menu", function() {
+    createQueryAndAddWidget(this.dashboardId).then(elTestId => {
+      cy.visit(this.dashboardUrl);
+      cy.getByTestId(elTestId).within(() => {
+        cy.getByTestId("WidgetDropdownButton").click();
+      });
+      cy.getByTestId("WidgetDropdownButtonMenu")
+        .contains("Display Options")
+        .click();
+    });
+  });
+
   describe("Auto height for table visualization", () => {
     it("renders correct height for 2 table rows", function() {
       const queryData = {
