@@ -110,7 +110,7 @@ describe("Grid compliant widgets", () => {
           .then(() => cy.get("@textboxEl"))
           .should(($el) => {
             expect($el.width()).to.eq(185); // min textbox width
-            expect($el.height()).to.eq(85); // min textbox height
+            expect($el.height()).to.eq(35); // min textbox height
           });
       });
     });

@@ -8,6 +8,6 @@ export default {
   defaultSizeY: 3,
   minSizeX: 2,
   maxSizeX: 12,
-  minSizeY: 2,
+  minSizeY: 1,
   maxSizeY: 1000,
 };
