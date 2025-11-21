@@ -1,6 +1,16 @@
 from unittest import TestCase
 
-from redash.query_runner.pg import build_schema
+from redash.query_runner.pg import _libpq_params, build_schema
+
+
+class TestParameters(TestCase):
+    def test_libpq_params(self):
+        configuration = {"libpq_params": "application_name=redash connect_timeout=5"}
+        self.assertDictEqual(_libpq_params(configuration), {"application_name": "redash", "connect_timeout": "5"})
+
+    def test_libpq_params_not_permitted(self):
+        configuration = {"libpq_params": "password=xyz"}
+        self.assertRaises(ValueError, _libpq_params, configuration)
 
 
 class TestBuildSchema(TestCase):

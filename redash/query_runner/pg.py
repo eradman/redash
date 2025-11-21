@@ -138,6 +138,15 @@ def _get_ssl_config(configuration):
     return ssl_config
 
 
+def _libpq_params(configuration):
+    standard_params = {"user", "password", "host", "port", "dbname"}
+    params = psycopg2.extensions.parse_dsn(configuration.get("libpq_params", ""))
+    overlap = standard_params.intersection(params.keys())
+    if overlap:
+        raise ValueError("Extra parameters may not contain {}".format(overlap))
+    return params
+
+
 class PostgreSQL(BaseSQLQueryRunner):
     noop_query = "SELECT 1"
 
@@ -151,6 +160,7 @@ class PostgreSQL(BaseSQLQueryRunner):
                 "host": {"type": "string", "default": "127.0.0.1"},
                 "port": {"type": "number", "default": 5432},
                 "dbname": {"type": "string", "title": "Database Name"},
+                "libpq_params": {"type": "string", "default": "application_name=redash", "title": "Parameters"},
                 "sslmode": {
                     "type": "string",
                     "title": "SSL Mode",
@@ -244,6 +254,7 @@ class PostgreSQL(BaseSQLQueryRunner):
 
     def _get_connection(self):
         self.ssl_config = _get_ssl_config(self.configuration)
+        self.libpq_params = _libpq_params(self.configuration)
         connection = psycopg2.connect(
             user=self.configuration.get("user"),
             password=self.configuration.get("password"),
@@ -252,6 +263,7 @@ class PostgreSQL(BaseSQLQueryRunner):
             dbname=self.configuration.get("dbname"),
             async_=True,
             **self.ssl_config,
+            **self.libpq_params,
         )
 
         return connection
