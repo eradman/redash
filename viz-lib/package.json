@@ -92,7 +92,7 @@
     "leaflet-fullscreen": "^1.0.2",
     "leaflet.markercluster": "^1.1.0",
     "lodash": "^4.17.10",
-    "numeral": "^2.0.6",
+    "numeral": "https://github.com/StarfishStorage/Numeral-js",
     "plotly.js": "3.3.1",
     "react-pivottable": "^0.11.0",
     "react-plotly.js": "^2.6.0",
